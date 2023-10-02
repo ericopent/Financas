@@ -126,8 +126,8 @@ grouped_mensal = dados.groupby(['Mes', 'Categoria']).sum('Valor').reset_index()
 
 
 # Create pie chart for the last month in the dataset
-last_month = monthly_category_sum['Mes'].max()
-last_month_data = monthly_category_sum[monthly_category_sum['Mes'] == last_month]
+last_month = grouped_mensal['Mes'].max()
+last_month_data = grouped_mensal[grouped_mensal['Mes'] == last_month]
 
 fig = go.Figure(data=[go.Pie(labels=last_month_data['Categoria'], 
                              values=last_month_data['Valor'],
