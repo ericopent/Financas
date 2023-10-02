@@ -2,3 +2,4 @@ gspread
 numpy
 pandas
 gspread_dataframe
+plotly.graph_objects
