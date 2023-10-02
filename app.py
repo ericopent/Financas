@@ -3,10 +3,12 @@ import streamlit as st
 import datetime
 import gspread
 from gspread_dataframe import set_with_dataframe
+from datetime import datetime
+
 st.set_page_config(
     layout="wide",
     page_title = 'Fut Iate',
-    page_icon='Untitled.svg')
+    page_icon='https://www.icrj.com.br/iate/images/logo/logo60.png')
     
 st.markdown("""
     <style>
@@ -78,7 +80,7 @@ st.markdown("""
 
 service_account = "service-account-key.json"
 
-def read_data(sheet = "FutIate", tab = "Ranking"):
+def read_data(sheet = "Orçamento mensal", tab = "Transações"):
     
     gc = gspread.service_account(filename=service_account)
 
@@ -89,4 +91,14 @@ def read_data(sheet = "FutIate", tab = "Ranking"):
     df = pd.DataFrame(worksheet.get_all_records())
 
     return(df)
-  
+
+dados = read_data(sheet = "Orçamento mensal", tab = "Transações")
+
+dados['Mes'] = dados['Data'].apply(lambda x: datetime.strptime(x, "%d/%m/%Y").month)
+
+mensal = dados.groupby('Mes').sum('Valor')
+mensal.reset_index(inplace = True)
+
+mensal.tail(1)['Mes'].values
+st.metric(label = mensal.tail(1)['Mes'].values[0], value = mensal.tail(1)['Valor'].values[0], delta = mensal.tail(1)['Valor'].values[0] - mensal.tail(2).head(1)['Valor'].values[0])
+
