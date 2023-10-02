@@ -7,7 +7,7 @@ from datetime import datetime
 
 st.set_page_config(
     layout="wide",
-    page_title = 'Finanças - Érico',
+    page_title = 'Fut Iate',
     page_icon='https://www.icrj.com.br/iate/images/logo/logo60.png')
     
 st.markdown("""
@@ -99,6 +99,28 @@ dados['Mes'] = dados['Data'].apply(lambda x: datetime.strptime(x, "%d/%m/%Y").mo
 mensal = dados.groupby('Mes').sum('Valor')
 mensal.reset_index(inplace = True)
 
-mensal.tail(1)['Mes'].values
-st.metric(label = mensal.tail(1)['Mes'].values[0], value = mensal.tail(1)['Valor'].values[0], delta = mensal.tail(1)['Valor'].values[0] - mensal.tail(2).head(1)['Valor'].values[0])
+meses = {
+    1:'Janeiro',
+    2:'Fevereiro',
+    3:'Março',
+    4:'Abril',
+    5: 'Maio',
+    6: 'Junho',
+    7: 'Julho',
+    8: 'Agosto',
+    9:'Setembro',
+    10: 'Outubro',
+    11: 'Novembro',
+    12: 'Dezembro'    
+}
 
+col1, col2 = st.columns(2)
+with col1:
+    st.metric(label = meses[mensal.tail(2).head(1)['Mes'].values[0]], value = round(mensal.tail(2).head(1)['Valor'].values[0],0), delta = round(mensal.tail(2).head(1)['Valor'].values[0] - mensal.tail(3).head(1)['Valor'].values[0],0))
+
+with col2:
+    st.metric(label = meses[mensal.tail(1)['Mes'].values[0]], value = round(mensal.tail(1)['Valor'].values[0],0), delta = round(mensal.tail(1)['Valor'].values[0] - mensal.tail(2).head(1)['Valor'].values[0],0))
+
+grouped_mensal = dados.groupby(['Mes', 'Categoria']).sum('Valor')
+
+st.write(grouped_mensal)
