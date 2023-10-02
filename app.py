@@ -1,91 +1,23 @@
-import pandas as pd
 import streamlit as st
-import datetime
-import gspread
-from gspread_dataframe import set_with_dataframe
-st.set_page_config(
-    layout="wide",
-    page_title = 'Fut Iate',
-    page_icon='https://www.icrj.com.br/iate/images/logo/logo60.png')
-    
-st.markdown("""
-    <style>
-    p {
-        font-size:20px;
-        place-items: center;
+from google.oauth2 import service_account
+from gsheetsdb import connect
 
-    }
-    
-    .st-af {
-        font-size: 19px;
-    }
-    
-    .css-10trblm.eqr7zpz0 {
-        
-        font-size:25px;
-    }
-    
-    code {
-        color: rgb(9, 171, 59);
-        overflow-wrap: break-word;
-        font-size: 20px;
-    }   
-    
-    .stMarkdown {
-    display: grid;
-    place-items: center;
-    }
-    
-    button{
-        display: grid;
-        place-items: center;
-        
-    }
-    
-    .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] {
-        font-size:24px;
-        text-align: center;
-        place-items: center;
+# Create a connection object.
+credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"],
+    scopes=[
+        "https://www.googleapis.com/auth/spreadsheets",
+    ],
+)
+conn = connect(credentials=credentials)
 
-    }
-    
-    .css-q8sbsg.eqr7zpz4 {
-        
-        font-size:24px;
-        text-align: center;
-        place-items: center;
-        
-    }
-    
-    .css-10trblm.eqr7zpz0 {
-        
-        font-size:40px;
-        text-align: center;
-        place-items: center;
-        
-    }
-    
-    .css-3mmywe.e15ugz7a0 {
-        
-        place-items: center;
-        align-content: center;
-        
-    }
-    
-    h2 {text-align: center;}
-    </style>
-    """, unsafe_allow_html=True)
+# Perform SQL query on the Google Sheet.
+# Uses st.cache_data to only rerun when the query changes or after 10 min.
+@st.cache_data(ttl=600)
+def run_query(query):
+    rows = conn.execute(query, headers=1)
+    rows = rows.fetchall()
+    return rows
 
-service_account = "service-account-key.json"
-
-def read_data(sheet = "Orçamento mensal", tab = "Transações"):
-    
-    gc = gspread.service_account(filename=service_account)
-
-    sh = gc.open(sheet)    
-    
-    worksheet = sh.worksheet(tab)
-
-    df = pd.DataFrame(worksheet.get_all_records())
-
-    return(df)
+sheet_url = st.secrets["private_gsheets_url"]
+rows = run_query(f'SELECT * FROM "{sheet_url}"')
