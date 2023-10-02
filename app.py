@@ -7,7 +7,7 @@ from datetime import datetime
 
 st.set_page_config(
     layout="wide",
-    page_title = 'Fut Iate',
+    page_title = 'Finanças - Érico',
     page_icon='https://www.icrj.com.br/iate/images/logo/logo60.png')
     
 st.markdown("""
