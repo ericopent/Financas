@@ -136,4 +136,4 @@ fig = go.Figure(data=[go.Pie(labels=last_month_data['Categoria'],
                              title=f'Distribuição para {meses[last_month]} - Monthly Category Sum'
                              )])
 
-st.plotly_chart(fig)
+st.plotly_chart(fig, use_container_width = True)
