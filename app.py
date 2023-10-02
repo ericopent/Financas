@@ -136,5 +136,23 @@ fig = go.Figure(data=[go.Pie(labels=last_month_data['Categoria'],
                              title=f'Distribuição para {meses[last_month]} - Monthly Category Sum'
                              )])
 
-st.headers("Compras, Último Mês)
+st.headers("Compras, Último Mês")
 st.plotly_chart(fig, use_container_width = True)
+
+st.headers("Compras, Geral")
+
+fig2 = go.Figure(data=[
+    go.Bar(
+        x=grouped_mensal['Mes'],  # Set x-axis to 'Mes'
+        y=grouped_mensal['Valor'],  # Set y-axis to 'Valor'
+        text=grouped_mensal['Categoria'],  # Text labels
+        hoverinfo='x+y+text',  # Display x, y, and text on hover
+        marker=dict(color='blue'),  # Change the bar color if desired
+        textposition='inside',  # Display text inside the bars
+        title=f'Distribuição dos Meses'
+    )
+])
+
+fig2.update_layout(title_text=f'Distribuição para {meses[last_month]} - Monthly Category Sum')
+st.plotly_chart(fig2, use_container_width = True)
+
