@@ -121,6 +121,18 @@ with col1:
 with col2:
     st.metric(label = meses[mensal.tail(1)['Mes'].values[0]], value = round(mensal.tail(1)['Valor'].values[0],0), delta = round(mensal.tail(1)['Valor'].values[0] - mensal.tail(2).head(1)['Valor'].values[0],0))
 
-grouped_mensal = dados.groupby(['Mes', 'Categoria']).sum('Valor')
+grouped_mensal = dados.groupby(['Mes', 'Categoria']).sum('Valor').reset_index()
 
-st.write(grouped_mensal)
+
+# Create pie chart for the last month in the dataset
+last_month = monthly_category_sum['Mes'].max()
+last_month_data = monthly_category_sum[monthly_category_sum['Mes'] == last_month]
+
+fig = go.Figure(data=[go.Pie(labels=last_month_data['Categoria'], 
+                             values=last_month_data['Valor'],
+                             hole=0.3,
+                             textinfo='percent+label',
+                             title=f'Distribuição para {meses[last_month]} - Monthly Category Sum'
+                             )])
+
+st.plotly_chart(fig)
