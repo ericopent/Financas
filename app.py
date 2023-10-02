@@ -6,7 +6,7 @@ from gspread_dataframe import set_with_dataframe
 st.set_page_config(
     layout="wide",
     page_title = 'Fut Iate',
-    page_icon='https://www.icrj.com.br/iate/images/logo/logo60.png')
+    page_icon='Untitled.svg')
     
 st.markdown("""
     <style>
