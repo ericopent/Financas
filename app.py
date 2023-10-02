@@ -4,6 +4,7 @@ import datetime
 import gspread
 from gspread_dataframe import set_with_dataframe
 from datetime import datetime
+import plotly.graph_objects as go
 
 st.set_page_config(
     layout="wide",
