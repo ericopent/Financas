@@ -147,11 +147,10 @@ fig2 = go.Figure(data=[
         y=grouped_mensal['Valor'],  # Set y-axis to 'Valor'
         text=grouped_mensal['Categoria'],  # Text labels
         hoverinfo='x+y+text',  # Display x, y, and text on hover
-        color=grouped_mensal['Categoria'],  # Change the bar color if desired
+        marker=dict(color=grouped_mensal['Color']),  # Use color based on 'Color' column
         textposition='inside'  # Display text inside the bars
     )
 ])
-
 fig2.update_layout(title_text=f'Distribuição categorias')
 st.plotly_chart(fig2, use_container_width = True)
 
