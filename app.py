@@ -151,7 +151,7 @@ colors = {category: colors(i) for i, category in enumerate(grouped_mensal['Categ
 
 fig2=go.Figure()
 for t in grouped_mensal['Categoria'].unique():
-    fig2.add_traces(go.Bar(x=grouped_mensal['Mes'], y = dfp['Valor'], name=t,
+    fig2.add_traces(go.Bar(x=grouped_mensal['Mes'], y = grouped_mensal['Valor'], name=t,
                          marker_color=colors[t]))
 
 fig2.update_layout(title_text=f'Distribuição categorias')
