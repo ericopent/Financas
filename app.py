@@ -136,10 +136,10 @@ fig = go.Figure(data=[go.Pie(labels=last_month_data['Categoria'],
                              title=f'Distribuição para {meses[last_month]} - Monthly Category Sum'
                              )])
 
-st.header("# Compras, Último Mês")
+st.header("Compras, Último Mês")
 st.plotly_chart(fig, use_container_width = True)
 
-st.header("# Compras, Geral")
+st.header("Compras, Geral")
 
 fig2 = go.Figure(data=[
     go.Bar(
@@ -153,6 +153,6 @@ fig2 = go.Figure(data=[
     )
 ])
 
-fig2.update_layout(title_text=f'Distribuição para {meses[last_month]} - Monthly Category Sum')
+fig2.update_layout(title_text=f'Distribuição categorias')
 st.plotly_chart(fig2, use_container_width = True)
 
