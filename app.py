@@ -5,6 +5,7 @@ import gspread
 from gspread_dataframe import set_with_dataframe
 from datetime import datetime
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 
 st.set_page_config(
     layout="wide",
@@ -141,16 +142,18 @@ st.plotly_chart(fig, use_container_width = True)
 
 st.header("Compras, Geral")
 
-fig2 = go.Figure(data=[
-    go.Bar(
-        x=grouped_mensal['Mes'],  # Set x-axis to 'Mes'
-        y=grouped_mensal['Valor'],  # Set y-axis to 'Valor'
-        text=grouped_mensal['Categoria'],  # Text labels
-        hoverinfo='x+y+text',  # Display x, y, and text on hover
-        marker=dict(color=grouped_mensal['Color']),  # Use color based on 'Color' column
-        textposition='inside'  # Display text inside the bars
-    )
-])
+num_categories = len(grouped_mensal['Categoria'].unique())
+
+colors = plt.cm.get_cmap('tab10', num_categories)
+
+# Create a dictionary to store category-color mapping
+colors = {category: colors(i) for i, category in enumerate(grouped_mensal['Categoria'].unique())}
+
+fig2=go.Figure()
+for t in grouped_mensal['Categoria'].unique():
+    fig2.add_traces(go.Bar(x=grouped_mensal['Mes'], y = dfp['Valor'], name=t,
+                         marker_color=colors[t]))
+
 fig2.update_layout(title_text=f'Distribuição categorias')
 st.plotly_chart(fig2, use_container_width = True)
 
