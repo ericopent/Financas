@@ -144,7 +144,7 @@ st.header("Compras, Geral")
 
 num_categories = len(grouped_mensal['Categoria'].unique())
 
-colors = plt.cm.get_cmap('tab10', num_categories)
+colors = plt.cm.get_cmap('Set3', num_categories)
 
 # Create a dictionary to store category-color mapping
 colors = {category: colors(i) for i, category in enumerate(grouped_mensal['Categoria'].unique())}
