@@ -144,10 +144,10 @@ st.header("Compras, Geral")
 
 num_categories = len(grouped_mensal['Categoria'].unique())
 
-colors = {'#FF4500','#FFD700','#32CD32','#87CEEB','#9370DB','#FF69B4','#00CED1','#FFA500','#808080','#4B0082'}
+colors = ['#FF4500','#FFD700','#32CD32','#87CEEB','#9370DB','#FF69B4','#00CED1','#FFA500','#808080','#4B0082']
 
 # Create a dictionary to store category-color mapping
-colors = {category: colors(i) for i, category in enumerate(grouped_mensal['Categoria'].unique())}
+colors = {category: colors[i] for i, category in enumerate(grouped_mensal['Categoria'].unique())}
 
 fig2=go.Figure()
 for t in grouped_mensal['Categoria'].unique():
