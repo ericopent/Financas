@@ -3,3 +3,4 @@ numpy
 pandas
 gspread_dataframe
 plotly
+matplotlib
