@@ -148,8 +148,7 @@ fig2 = go.Figure(data=[
         text=grouped_mensal['Categoria'],  # Text labels
         hoverinfo='x+y+text',  # Display x, y, and text on hover
         marker=dict(color='blue'),  # Change the bar color if desired
-        textposition='inside',  # Display text inside the bars
-        title=f'Distribuição dos Meses'
+        textposition='inside'  # Display text inside the bars
     )
 ])
 
