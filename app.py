@@ -147,7 +147,7 @@ fig2 = go.Figure(data=[
         y=grouped_mensal['Valor'],  # Set y-axis to 'Valor'
         text=grouped_mensal['Categoria'],  # Text labels
         hoverinfo='x+y+text',  # Display x, y, and text on hover
-        marker=dict(color='blue'),  # Change the bar color if desired
+        color=grouped_mensal['Categoria'],  # Change the bar color if desired
         textposition='inside'  # Display text inside the bars
     )
 ])
