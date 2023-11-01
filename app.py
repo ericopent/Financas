@@ -4,12 +4,10 @@ import datetime
 import gspread
 from gspread_dataframe import set_with_dataframe
 from datetime import datetime
-import plotly.graph_objects as go
-import matplotlib.pyplot as plt
 
 st.set_page_config(
     layout="wide",
-    page_title = 'Fut Iate',
+    page_title = 'Finanças',
     page_icon='https://www.icrj.com.br/iate/images/logo/logo60.png')
     
 st.markdown("""
@@ -95,11 +93,24 @@ def read_data(sheet = "Orçamento mensal", tab = "Transações"):
     return(df)
 
 dados = read_data(sheet = "Orçamento mensal", tab = "Transações")
+dados['Data'] = pd.to_datetime(dados['Data'], format="%d/%m/%Y")
 
-dados['Mes'] = dados['Data'].apply(lambda x: datetime.strptime(x, "%d/%m/%Y").month)
+# Create a new column 'Group' to represent the date ranges
+def assign_date_range(date):
+    if date.day >= 30:
+        start_date = date.replace(day=30)
+        end_date = (start_date + pd.DateOffset(months=1)).replace(day=29)
+    else:
+        end_date = date.replace(day=29)
+        start_date = (end_date - pd.DateOffset(months=1)).replace(day=30)
+    return f"{start_date.strftime('%d/%m/%Y')} - {end_date.strftime('%d/%m/%Y')}"
 
-mensal = dados.groupby('Mes').sum('Valor')
-mensal.reset_index(inplace = True)
+dados['Group'] = dados['Data'].apply(assign_date_range)
+
+mensal = dados.groupby('Group')['Valor'].sum().reset_index()
+
+mensal['Mes'] = mensal['Group'].apply(lambda x: pd.to_datetime(x.split('-')[1]).month)
+dados['Mes'] = dados['Group'].apply(lambda x: pd.to_datetime(x.split('-')[1]).month)
 
 meses = {
     1:'Janeiro',
@@ -116,44 +127,30 @@ meses = {
     12: 'Dezembro'    
 }
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 with col1:
-    st.metric(label = meses[mensal.tail(2).head(1)['Mes'].values[0]], value = round(mensal.tail(2).head(1)['Valor'].values[0],0), delta = round(mensal.tail(2).head(1)['Valor'].values[0] - mensal.tail(3).head(1)['Valor'].values[0],0))
-
+    st.metric(label = meses[mensal.tail(3).head(1)['Mes'].values[0]], value = round(mensal.tail(3).head(1)['Valor'].values[0],0), delta = round(mensal.tail(3).head(1)['Valor'].values[0] - mensal.tail(4).head(1)['Valor'].values[0],0))
 with col2:
+    st.metric(label = meses[mensal.tail(2).head(1)['Mes'].values[0]], value = round(mensal.tail(2).head(1)['Valor'].values[0],0), delta = round(mensal.tail(2).head(1)['Valor'].values[0] - mensal.tail(3).head(1)['Valor'].values[0],0))
+with col3:
     st.metric(label = meses[mensal.tail(1)['Mes'].values[0]], value = round(mensal.tail(1)['Valor'].values[0],0), delta = round(mensal.tail(1)['Valor'].values[0] - mensal.tail(2).head(1)['Valor'].values[0],0))
 
-grouped_mensal = dados.groupby(['Mes', 'Categoria']).sum('Valor').reset_index()
+dici = read_data(sheet = "Orçamento mensal", tab = "DePara")
+dici.columns = ['Descrição', 'Categoria']
 
+db = pd.merge(dados, dici, on = 'Descrição')
 
-# Create pie chart for the last month in the dataset
-last_month = grouped_mensal['Mes'].max()
-last_month_data = grouped_mensal[grouped_mensal['Mes'] == last_month]
+db = db.groupby(['Mes','Categoria']).sum('Valor')
 
-fig = go.Figure(data=[go.Pie(labels=last_month_data['Categoria'], 
-                             values=last_month_data['Valor'],
-                             hole=0.3,
-                             textinfo='percent+label',
-                             title=f'Distribuição para {meses[last_month]} - Monthly Category Sum'
-                             )])
+import plotly.express as px
 
-st.header("Compras, Último Mês")
-st.plotly_chart(fig, use_container_width = True)
+# Assuming you have the data grouped as 'db' with the structure you mentioned.
 
-st.header("Compras, Geral")
+fig = px.bar(db.reset_index(), x='Mes', y='Valor', color='Categoria',
+             labels={'Mes': 'Mês', 'Valor': 'Valor', 'Categoria': 'Categoria'},
+             title='Monthly Expenses by Category',
+             category_orders={'Mes': sorted(db.index.get_level_values(0).unique())})
 
-num_categories = len(grouped_mensal['Categoria'].unique())
+fig.update_layout(xaxis_type='category')  # Ensure x-axis is treated as categorical
 
-colors = ['#FF4500','#FFD700','#32CD32','#87CEEB','#9370DB','#FF69B4','#00CED1','#FFA500','#808080','#4B0082']
-
-# Create a dictionary to store category-color mapping
-colors = {category: colors[i] for i, category in enumerate(grouped_mensal['Categoria'].unique())}
-
-fig2=go.Figure()
-for t in grouped_mensal['Categoria'].unique():
-    fig2.add_traces(go.Bar(x=grouped_mensal[grouped_mensal['Categoria'] == t]['Mes'], y = grouped_mensal[grouped_mensal['Categoria'] == t]['Valor'], name=t,
-                         marker_color=colors[t]))
-
-fig2.update_layout(title_text=f'Distribuição categorias')
-st.plotly_chart(fig2, use_container_width = True)
-
+st.plotly_chart(fig)
